@@ -310,11 +310,11 @@ curl -sS -X PUT \
   -i
 ```
 
-### AI (optional)
+### AI (Future coming in 2026.1)
 
 #### `POST AiRagChat`
 
-Invokes a RAG chat request with:
+Invokes a RAG chat request  which will reference and deep research all the content previously processed with Adlib Transform from a particular collection of documents:
 
 * `sessionId` (UUID)
 * `message`

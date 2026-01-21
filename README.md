@@ -4,13 +4,13 @@
 
 Customer Integration Guide
 
-> **Audience:** Customers integrating with **Adlib Transform** via REST API.
-> **Assumption:** Transform is already deployed (containers or VMs) and reachable from your network.
-> **Swagger UI:** `https://transform-services-url/Adlib/ClientIntegrationService/swagger/index.html?urls.primaryName=Transform+API+v2`
-> **Service base URL:** `https://transform-services-url/Adlib/ClientIntegrationService/`
-> **Postman** A postman collection is provided for you to quickly get testing [CIS 2.0.postman_collection.json](README/postman.json)
->
-> ![swagger_screenshot](README/swagger_screenshot.png)
+- **Audience:** Customers integrating with **Adlib Transform** via REST API.
+- **Assumption:** Transform is already deployed (containers or VMs) and reachable from your network.
+- **Swagger UI:** `https://transform-services-url/Adlib/ClientIntegrationService/swagger/index.html?urls.primaryName=Transform+API+v2`
+- **Service base URL:** `https://transform-services-url/Adlib/ClientIntegrationService/`
+- **Postman** A postman collection is provided for you to quickly get testing [CIS 2.0.postman_collection.json](README/postman.json)
+
+![swagger_screenshot](README/swagger_screenshot.png)
 
 ---
 

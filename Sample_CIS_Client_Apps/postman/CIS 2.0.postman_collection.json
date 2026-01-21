@@ -1,0 +1,702 @@
+{
+	"info": {
+		"_postman_id": "c0a4d833-695e-4dac-a124-a86ce17a0a3c",
+		"name": "ClientIntegration V2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46624689"
+	},
+	"item": [
+		{
+			"name": "Environment",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "admin",
+						"type": "text"
+					},
+					{
+						"key": "pass",
+						"value": "1",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{apiKey}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Environment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Environment"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Environment Example Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "user",
+								"value": "admin",
+								"type": "text"
+							},
+							{
+								"key": "pass",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v2/ClientIntegration/Environment",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"ClientIntegration",
+								"Environment"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n    \"repositories\": [\r\n        {\r\n            \"id\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n            \"name\": \"Generic Source\",\r\n            \"type\": \"Generic\",\r\n            \"workspaceId\": \"65b2e22b-57fa-426a-a31e-bbc0361ae6cb\",\r\n            \"worspaceName\": \"Default Instruction Set\"\r\n        }\r\n    ],\r\n    \"globalVariables\": [],\r\n    \"success\": true,\r\n    \"message\": \"\"\r\n}"
+				}
+			]
+		},
+		{
+			"name": "Statistics",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Statistics/:repoId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Statistics",
+						":repoId"
+					],
+					"variable": [
+						{
+							"key": "repoId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Statistics Example Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v2/ClientIntegration/Statistics/:repoId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"ClientIntegration",
+								"Statistics",
+								":repoId"
+							],
+							"variable": [
+								{
+									"key": "repoId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n    \"queued\": 0,\r\n    \"transforming\": 0,\r\n    \"workflow\": 0,\r\n    \"review\": 0,\r\n    \"cancelled\": 0,\r\n    \"completedSuccessful\": 30,\r\n    \"completedFailed\": 0,\r\n    \"averageQueueTimeInSec\": 122.707142,\r\n    \"averageProcessTimeInSec\": 46.1,\r\n    \"success\": true,\r\n    \"message\": \"\"\r\n}"
+				}
+			]
+		},
+		{
+			"name": "Status",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Status/:jobId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Status",
+						":jobId"
+					],
+					"variable": [
+						{
+							"key": "jobId",
+							"value": "6CE12761-E088-4833-9D78-3B8A89255F4F"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Status Exmaple Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v2/ClientIntegration/Status/:jobId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"ClientIntegration",
+								"Status",
+								":jobId"
+							],
+							"variable": [
+								{
+									"key": "jobId",
+									"value": "6CE12761-E088-4833-9D78-3B8A89255F4F"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": "",
+					"header": [],
+					"cookie": [
+						{
+							"expires": "Invalid Date",
+							"domain": "",
+							"path": ""
+						}
+					],
+					"body": "{\r\n    \"jobId\": \"f978c559-a016-420f-9427-de4308cebb35\",\r\n    \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n    \"status\": \"CompletedSuccessful\",\r\n    \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n    \"totalQueueTimeInSec\": 101.4,\r\n    \"totalProcessingTimeInSec\": 117.2,\r\n    \"success\": true,\r\n    \"message\": \"\"\r\n}"
+				}
+			]
+		},
+		{
+			"name": "Completed",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Completed/:repoId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Completed",
+						":repoId"
+					],
+					"variable": [
+						{
+							"key": "repoId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Completed Example Respose",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v2/ClientIntegration/Completed/:repoId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"ClientIntegration",
+								"Completed",
+								":repoId"
+							],
+							"variable": [
+								{
+									"key": "repoId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": "",
+					"header": [],
+					"cookie": [
+						{
+							"expires": "Invalid Date",
+							"domain": "",
+							"path": ""
+						}
+					],
+					"body": "[\r\n    {\r\n        \"jobId\": \"f978c559-a016-420f-9427-de4308cebb35\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedSuccessful\",\r\n        \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n        \"totalQueueTimeInSec\": 101.4,\r\n        \"totalProcessingTimeInSec\": 117.2,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"2ed0a22f-c945-4990-935a-5665b08d5f19\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedSuccessful\",\r\n        \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n        \"totalQueueTimeInSec\": 4.5,\r\n        \"totalProcessingTimeInSec\": 12.8,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"3143aeb1-99b9-48c1-8a65-5fdf043e515f\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedSuccessful\",\r\n        \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n        \"totalQueueTimeInSec\": 4.3,\r\n        \"totalProcessingTimeInSec\": 12.5,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"3bff3143-249a-47f5-a6ac-e86a6f4a67b7\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedSuccessful\",\r\n        \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n        \"totalQueueTimeInSec\": 4.4,\r\n        \"totalProcessingTimeInSec\": 14.5,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"5bca5589-17eb-40ab-b391-6b60c7385d10\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedSuccessful\",\r\n        \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n        \"totalQueueTimeInSec\": 17.7,\r\n        \"totalProcessingTimeInSec\": 38.7,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"e0ff50a0-056b-48bb-b8a6-646f8f2f5358\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedSuccessful\",\r\n        \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n        \"totalQueueTimeInSec\": 6.8,\r\n        \"totalProcessingTimeInSec\": 20.3,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"87be4b44-5837-4a75-80a0-d39d76570067\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedSuccessful\",\r\n        \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n        \"totalQueueTimeInSec\": 16.7,\r\n        \"totalProcessingTimeInSec\": 36.4,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"e45d3f70-b8b7-4557-ae59-42fd9aa5df95\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedSuccessful\",\r\n        \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n        \"totalQueueTimeInSec\": 26.5,\r\n        \"totalProcessingTimeInSec\": 50.7,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"6ba2e7ab-81de-460b-b8ac-a6ac3da037ff\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedUncommitted\",\r\n        \"totalQueueTimeInSec\": 0.4,\r\n        \"totalProcessingTimeInSec\": 0.4,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    },\r\n    {\r\n        \"jobId\": \"73e5808a-7782-484c-951c-d81df2a623ab\",\r\n        \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n        \"status\": \"CompletedUncommitted\",\r\n        \"totalQueueTimeInSec\": 0,\r\n        \"totalProcessingTimeInSec\": 0,\r\n        \"success\": true,\r\n        \"message\": \"\"\r\n    }\r\n]"
+				}
+			]
+		},
+		{
+			"name": "Info",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Info/:jobId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Info",
+						":jobId"
+					],
+					"variable": [
+						{
+							"key": "jobId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Info",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v2/ClientIntegration/Info/:jobId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"ClientIntegration",
+								"Info",
+								":jobId"
+							],
+							"variable": [
+								{
+									"key": "jobId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": "",
+					"header": [],
+					"cookie": [
+						{
+							"expires": "Invalid Date",
+							"domain": "",
+							"path": ""
+						}
+					],
+					"body": "{\r\n    \"jobId\": \"f978c559-a016-420f-9427-de4308cebb35\",\r\n    \"repositoryId\": \"68ac01e1-263b-4437-8b59-f1c40a07610a\",\r\n    \"status\": \"CompletedSuccessful\",\r\n    \"details\": \"Processing successful with PdfProcessing.Engine on trfm-dev-b2\",\r\n    \"totalQueueTimeInSec\": 101.4,\r\n    \"totalProcessingTimeInSec\": 117.2,\r\n    \"inputFiles\": [\r\n        {\r\n            \"fileName\": \"700pagesforMRCtest.pdf\",\r\n            \"fileLength\": 948760471,\r\n            \"metadata\": [\r\n                {\r\n                    \"name\": \"Test\",\r\n                    \"value\": \"130MB doc\"\r\n                },\r\n                {\r\n                    \"name\": \"Adlib.Job.DocumentInput.FileType\",\r\n                    \"value\": \"Adlib.Content.Identification.Types.Pdf\"\r\n                },\r\n                {\r\n                    \"name\": \"OriginalFileName\",\r\n                    \"value\": \"https://trfm-dev-b2/Adlib/AdlibJobFiles/trfm-dev-b2.adlibdevcloud.com/AdlibJobFiles/F97/8C5/59A/F978C559-A016-420F-9427-DE4308CEBB35/Input//700pagesforMRCtest.pdf\"\r\n                },\r\n                {\r\n                    \"name\": \"Adlib.Job.DocumentInput.FileTypeOriginal\",\r\n                    \"value\": \"Adlib.Content.Identification.Types.Pdf\"\r\n                },\r\n                {\r\n                    \"name\": \"OriginalInputFolder\",\r\n                    \"value\": \"\\\\\\\\trfm-dev-b2.adlibdevcloud.com\\\\AdlibJobFiles\\\\F97\\\\8C5\\\\59A\\\\F978C559-A016-420F-9427-DE4308CEBB35\\\\Input\\\\\"\r\n                },\r\n                {\r\n                    \"name\": \"InputSortIndex\",\r\n                    \"value\": \"0.001\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"fileName\": \"Invoice.JPG\",\r\n            \"fileLength\": 45264,\r\n            \"metadata\": [\r\n                {\r\n                    \"name\": \"Test\",\r\n                    \"value\": \"100MB doc\"\r\n                },\r\n                {\r\n                    \"name\": \"Adlib.Job.DocumentInput.FileType\",\r\n                    \"value\": \"Adlib.Content.Identification.Types.Image.Jpeg\"\r\n                },\r\n                {\r\n                    \"name\": \"OriginalFileName\",\r\n                    \"value\": \"https://trfm-dev-b2/Adlib/AdlibJobFiles/trfm-dev-b2.adlibdevcloud.com/AdlibJobFiles/F97/8C5/59A/F978C559-A016-420F-9427-DE4308CEBB35/Input//Invoice.JPG\"\r\n                },\r\n                {\r\n                    \"name\": \"Adlib.Job.DocumentInput.FileTypeOriginal\",\r\n                    \"value\": \"Adlib.Content.Identification.Types.Image.Jpeg\"\r\n                },\r\n                {\r\n                    \"name\": \"OriginalInputFolder\",\r\n                    \"value\": \"\\\\\\\\trfm-dev-b2.adlibdevcloud.com\\\\AdlibJobFiles\\\\F97\\\\8C5\\\\59A\\\\F978C559-A016-420F-9427-DE4308CEBB35\\\\Input\\\\\"\r\n                },\r\n                {\r\n                    \"name\": \"InputSortIndex\",\r\n                    \"value\": \"0.002\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"outputFiles\": [\r\n        {\r\n            \"fileName\": \"700pagesforMRCtest.pdf\",\r\n            \"fileLength\": 29615940,\r\n            \"metadata\": [\r\n                {\r\n                    \"name\": \"Adlib.Job.DocumentOutput.FileType\",\r\n                    \"value\": \"Adlib.Content.Identification.Types.Pdf\"\r\n                },\r\n                {\r\n                    \"name\": \"OutputSortIndex\",\r\n                    \"value\": \"0.0011\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"jobMetadata\": [\r\n        {\r\n            \"name\": \"Adlib.Configuration.InstalledComponentId\",\r\n            \"value\": \"939D170F-3516-4265-B4A4-EB76CBD6FE31\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Configuration.AdminScopeId\",\r\n            \"value\": \"258ED1EB-3B25-45E0-8B1B-FAF5014A9C6F\"\r\n        },\r\n        {\r\n            \"name\": \"Test\",\r\n            \"value\": \"130MB doc\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Connectors.InputFileExtension\",\r\n            \"value\": \"pdf\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Connectors.InputBaseFileName\",\r\n            \"value\": \"700pagesforMRCtest\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Connectors.InputFileSize\",\r\n            \"value\": \"948760471\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Job.FileCount\",\r\n            \"value\": \"2\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Job.JobId\",\r\n            \"value\": \"f978c559-a016-420f-9427-de4308cebb35\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Job.DocumentInput.FileExtension\",\r\n            \"value\": \"pdf\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Job.DocumentInput.FileType\",\r\n            \"value\": \"Adlib.Content.Identification.Types.Pdf\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Job.DocumentInput.FileTypes\",\r\n            \"value\": \"Adlib.Content.Identification.Types.Pdf,Adlib.Content.Identification.Types.Image.Jpeg\"\r\n        },\r\n        {\r\n            \"name\": \"Adlib.Job.DocumentInput.FileExtensions\",\r\n            \"value\": \"pdf,jpg\"\r\n        }\r\n    ],\r\n    \"success\": true,\r\n    \"message\": \"\"\r\n}"
+				}
+			]
+		},
+		{
+			"name": "Download",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Download/:jobId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Download",
+						":jobId"
+					],
+					"variable": [
+						{
+							"key": "jobId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Release",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Release/:jobId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Release",
+						":jobId"
+					],
+					"variable": [
+						{
+							"key": "jobId",
+							"value": "{{jobId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Release/:jobId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Release",
+						":jobId"
+					],
+					"variable": [
+						{
+							"key": "jobId",
+							"value": "{{jobId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "x-api-key",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "RepositoryId",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "InputFiles[0].InputFile",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "InputFiles[0].FileMetadata[0].Name",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "InputFiles[0].FileMetadata[0].Value",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "InputFiles[1].InputFile",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "InputFiles[1].FileMetadata[0].Name",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "InputFiles[1].FileMetadata[0].Value",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "SupportingFiles",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						},
+						{
+							"key": "JobMetaData[0].Name",
+							"value": "Adlib.Job.JobId",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "JobMetaData[0].Value",
+							"value": "f623ed86-0da8-47c2-adaf-ba80dcc532b6",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Metadata",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fileMetadata\": [\r\n        {\r\n            \"fileName\": \"Sample_Invoice.pdf\",\r\n            \"metadata\": [\r\n                {\r\n                    \"name\": \"Test\",\r\n                    \"value\": \"Testing1234\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"jobMetadata\": [\r\n        {\r\n            \"name\": \"Test\",\r\n            \"value\": \"Test1\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/Metadata/:jobId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"Metadata",
+						":jobId"
+					],
+					"variable": [
+						{
+							"key": "jobId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

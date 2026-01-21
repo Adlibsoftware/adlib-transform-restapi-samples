@@ -1,0 +1,95 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0FDC5345-C5CD-2585-AB1A-3D1BCD4BE0C5}|CIS 2.0.csproj|c:\\jason\\src\\transform\\source\\adlib\\restapi\\sample_cis_client_apps\\csharp\\cis 2.0\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0FDC5345-C5CD-2585-AB1A-3D1BCD4BE0C5}|CIS 2.0.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0FDC5345-C5CD-2585-AB1A-3D1BCD4BE0C5}|CIS 2.0.csproj|c:\\jason\\src\\transform\\source\\adlib\\restapi\\sample_cis_client_apps\\csharp\\cis 2.0\\cis 2.0.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{0FDC5345-C5CD-2585-AB1A-3D1BCD4BE0C5}|CIS 2.0.csproj|solutionrelative:cis 2.0.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0FDC5345-C5CD-2585-AB1A-3D1BCD4BE0C5}|CIS 2.0.csproj|c:\\jason\\src\\transform\\source\\adlib\\restapi\\sample_cis_client_apps\\csharp\\cis 2.0\\apiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0FDC5345-C5CD-2585-AB1A-3D1BCD4BE0C5}|CIS 2.0.csproj|solutionrelative:apiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0FDC5345-C5CD-2585-AB1A-3D1BCD4BE0C5}|CIS 2.0.csproj|c:\\jason\\src\\transform\\source\\adlib\\restapi\\sample_cis_client_apps\\csharp\\cis 2.0\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{0FDC5345-C5CD-2585-AB1A-3D1BCD4BE0C5}|CIS 2.0.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CIS 2.0",
+              "DocumentMoniker": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\CIS 2.0.csproj",
+              "RelativeDocumentMoniker": "CIS 2.0.csproj",
+              "ToolTip": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\CIS 2.0.csproj",
+              "RelativeToolTip": "CIS 2.0.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-11-21T07:30:16.705Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAKIAAAAAAAAAAAASwK4AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-21T07:29:28.482Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-21T07:29:18.337Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ApiClient.cs",
+              "DocumentMoniker": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\ApiClient.cs",
+              "RelativeDocumentMoniker": "ApiClient.cs",
+              "ToolTip": "C:\\Jason\\src\\transform\\Source\\Adlib\\RESTAPI\\Sample_CIS_Client_Apps\\csharp\\CIS 2.0\\ApiClient.cs",
+              "RelativeToolTip": "ApiClient.cs",
+              "ViewState": "AgIAADkAAAAAAAAAAAAowBcAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-21T07:29:12.067Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

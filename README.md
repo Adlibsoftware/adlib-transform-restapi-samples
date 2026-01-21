@@ -2,6 +2,8 @@
 
 # Adlib Transform — REST API v2 (Client Integration Service)
 
+Clients and Partners can easily integrate with Adlib Transform to access Agentic high fidelity rendering, classification, extraction, validation of critical business documents. This developer guide and sample files will help you access these great features.  Note: this requires that you have an Adlib Transform deployment within your enterprise.
+
 Customer Integration Guide
 
 - **Audience:** Customers integrating with **Adlib Transform** via REST API.

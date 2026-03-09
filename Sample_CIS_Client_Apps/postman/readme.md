@@ -5,6 +5,7 @@ This Postman collection provides comprehensive testing capabilities for the Adli
 ## Overview
 
 The Client Integration Service v2.0 API provides endpoints for:
+
 - **Environment Management**: Retrieve available repositories and global variables
 - **Job Submission**: Upload files with metadata for processing
 - **Status Monitoring**: Track job progress and completion
@@ -15,24 +16,30 @@ The Client Integration Service v2.0 API provides endpoints for:
 
 All endpoints follow the pattern: `{{baseUrl}}/api/v2/ClientIntegration/{endpoint}`
 
+```example
+example base url: https://your-transform-host-name-here/Adlib/ClientIntegrationService
+```
+
 ## Authentication
 
 The API uses API Key authentication with the following methods:
+
 - **Header**: `X-Api-Key: {{apiKey}}`
 
 ## Environment Variables
 
 Configure these variables in your Postman environment:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `baseUrl` | Base URL of the API server | `https://your-server.com` |
-| `apiKey` | Your API key for authentication | `your-api-key-here` |
-| `jobId` | GUID of a specific job | `f978c559-a016-420f-9427-de4308cebb35` |
+| Variable    | Description                     | Example                                  |
+| ----------- | ------------------------------- | ---------------------------------------- |
+| `baseUrl` | Base URL of the API server      | `https://your-server.com`              |
+| `apiKey`  | Your API key for authentication | `your-api-key-here`                    |
+| `jobId`   | GUID of a specific job          | `f978c559-a016-420f-9427-de4308cebb35` |
 
 ## API Endpoints
 
 ### 1. Environment
+
 - **Method**: `GET`
 - **Endpoint**: `/Environment`
 - **Description**: Retrieves all available repositories and global variables for the authenticated API key
@@ -40,15 +47,17 @@ Configure these variables in your Postman environment:
 - **Use Case**: Initial setup to discover available processing repositories
 
 ### 2. Statistics
+
 - **Method**: `GET`
 - **Endpoint**: `/Statistics/{repositoryId}`
 - **Description**: Returns job processing statistics for a specific repository
-- **Parameters**: 
+- **Parameters**:
   - `repositoryId` (GUID): The repository to get statistics for
 - **Response**: Count of jobs by status (Queued, Transforming, Completed, etc.) and average processing times
 - **Use Case**: Monitor repository performance and workload
 
 ### 3. Status
+
 - **Method**: `GET`
 - **Endpoint**: `/Status/{jobId}`
 - **Description**: Retrieves detailed status information for a specific job
@@ -58,6 +67,7 @@ Configure these variables in your Postman environment:
 - **Use Case**: Monitor individual job progress
 
 ### 4. Completed
+
 - **Method**: `GET`
 - **Endpoint**: `/Completed/{repositoryId}`
 - **Parameters**:
@@ -68,6 +78,7 @@ Configure these variables in your Postman environment:
 - **Use Case**: Retrieve finished jobs ready for download
 
 ### 5. Info
+
 - **Method**: `GET`
 - **Endpoint**: `/Info/{jobId}`
 - **Description**: Gets comprehensive information about a job including input/output files and all metadata
@@ -77,17 +88,19 @@ Configure these variables in your Postman environment:
 - **Use Case**: Detailed job inspection and metadata review
 
 ### 6. Download
+
 - **Method**: `GET`
 - **Endpoint**: `/Download/{jobId}`
 - **Description**: Downloads the output file(s) from a completed job
 - **Parameters**:
   - `jobId` (GUID): The job to download files from
-- **Response**: 
+- **Response**:
   - Single file: Returns the file directly
   - Multiple files: Returns a ZIP archive containing all files
 - **Use Case**: Retrieve processed results
 
 ### 7. Submit
+
 - **Method**: `POST`
 - **Endpoint**: `/Submit`
 - **Content-Type**: `multipart/form-data`
@@ -104,6 +117,7 @@ Configure these variables in your Postman environment:
 - **Use Case**: Start new processing jobs
 
 ### 8. Release
+
 - **Method**: `PUT`
 - **Endpoint**: `/Release/{jobId}`
 - **Description**: Marks a completed job as released/delivered
@@ -113,6 +127,7 @@ Configure these variables in your Postman environment:
 - **Use Case**: Releases the job for the system after you are done with it (clean up).
 
 ### 9. Cancel
+
 - **Method**: `PUT`
 - **Endpoint**: `/Cancel/{jobId}`
 - **Description**: Cancels a queued job (only works if job hasn't started processing)
@@ -122,11 +137,13 @@ Configure these variables in your Postman environment:
 - **Use Case**: Cancel jobs that are no longer needed or are stuck
 
 ### 10. Metadata
+
 - **Method**: `PUT`
 - **Endpoint**: `/Metadata/{jobId}`
 - **Content-Type**: `application/json`
 - **Description**: Updates job and file metadata for an existing job
 - **Request Body**:
+
 ```json
 {
     "fileMetadata": [
@@ -148,6 +165,7 @@ Configure these variables in your Postman environment:
     ]
 }
 ```
+
 - **Response**: HTTP 204 No Content on success
 - **Use Case**: Update metadata after job submission
 
@@ -163,6 +181,7 @@ Configure these variables in your Postman environment:
 ## Response Formats
 
 ### Success Response Structure
+
 ```json
 {
     "success": true,
@@ -172,6 +191,7 @@ Configure these variables in your Postman environment:
 ```
 
 ### Error Response Structure
+
 ```json
 {
     "success": false,
@@ -190,6 +210,7 @@ Configure these variables in your Postman environment:
 ## Example Responses
 
 ### Environment Response
+
 ```json
 {
     "repositories": [
@@ -214,6 +235,7 @@ Configure these variables in your Postman environment:
 ```
 
 ### Job Info Response
+
 ```json
 {
     "jobId": "f978c559-a016-420f-9427-de4308cebb35",

@@ -7,3 +7,5 @@
 **/node_modules/
 **/packages/
 **/__pycache__/
+**/dist/
+**/log.txt

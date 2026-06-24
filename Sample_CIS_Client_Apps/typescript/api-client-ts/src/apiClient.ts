@@ -88,19 +88,7 @@ export class ApiClient {
       throw new Error(`Failed: HTTP error code: ${response.status}`);
     }
 
-    let fileName = jobId + '.unknown';
-    const cd = response.headers['content-disposition'];
-    if (cd) {
-      try {
-        const parsed = contentDisposition.parse(cd);
-        if (parsed.parameters?.filename) {
-          fileName = parsed.parameters.filename;
-        }
-      } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : String(e);
-        throw new Error(`Failed to parse Content-Disposition: ${errorMessage}`);
-      }
-    }
+    const fileName = this.getDownloadFileName(response.headers['content-disposition'], jobId);
 
     const filePath = path.join(downloadDirectory, fileName);
     const writer = fs.createWriteStream(filePath);
@@ -110,6 +98,111 @@ export class ApiClient {
       writer.on('finish', resolve);
       writer.on('error', reject);
     });
+  }
+
+  private getDownloadFileName(contentDispositionHeader: string | undefined, jobId: string): string {
+    let fileName = jobId + '.unknown';
+
+    if (contentDispositionHeader) {
+      const fileNameStar = this.getContentDispositionParameter(contentDispositionHeader, 'filename*');
+      let decodedFileNameStar: string | undefined;
+
+      if (fileNameStar) {
+        decodedFileNameStar = this.decodeRfc5987Value(fileNameStar);
+      }
+
+      if (decodedFileNameStar) {
+        fileName = decodedFileNameStar;
+      } else {
+        try {
+          const parsed = contentDisposition.parse(contentDispositionHeader);
+          if (parsed.parameters?.filename) {
+            fileName = parsed.parameters.filename;
+          }
+        } catch (e) {
+          const errorMessage = e instanceof Error ? e.message : String(e);
+          throw new Error(`Failed to parse Content-Disposition: ${errorMessage}`);
+        }
+      }
+    }
+
+    return path.basename(fileName);
+  }
+
+  private getContentDispositionParameter(header: string, parameterName: string): string | undefined {
+    const parts = this.splitContentDispositionHeader(header);
+    const lowerParameterName = parameterName.toLowerCase();
+
+    for (const part of parts.slice(1)) {
+      const equalsIndex = part.indexOf('=');
+      if (equalsIndex === -1) {
+        continue;
+      }
+
+      const name = part.slice(0, equalsIndex).trim().toLowerCase();
+      if (name === lowerParameterName) {
+        return this.unquoteHeaderValue(part.slice(equalsIndex + 1).trim());
+      }
+    }
+
+    return undefined;
+  }
+
+  private splitContentDispositionHeader(header: string): string[] {
+    const parts: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    let escaped = false;
+
+    for (const char of header) {
+      if (escaped) {
+        current += char;
+        escaped = false;
+      } else if (char === '\\' && inQuotes) {
+        escaped = true;
+      } else if (char === '"') {
+        inQuotes = !inQuotes;
+        current += char;
+      } else if (char === ';' && !inQuotes) {
+        parts.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+
+    parts.push(current.trim());
+    return parts;
+  }
+
+  private unquoteHeaderValue(value: string): string {
+    if (value.length >= 2 && value.startsWith('"') && value.endsWith('"')) {
+      return value.slice(1, -1);
+    }
+
+    return value;
+  }
+
+  private decodeRfc5987Value(value: string): string | undefined {
+    const firstQuote = value.indexOf("'");
+    const secondQuote = value.indexOf("'", firstQuote + 1);
+
+    if (firstQuote === -1 || secondQuote === -1) {
+      return undefined;
+    }
+
+    const charset = value.slice(0, firstQuote).toLowerCase();
+    const encodedValue = value.slice(secondQuote + 1);
+
+    if (charset && charset !== 'utf-8' && charset !== 'us-ascii') {
+      return undefined;
+    }
+
+    try {
+      return decodeURIComponent(encodedValue);
+    } catch {
+      return undefined;
+    }
   }
 
   async release(jobId: string): Promise<void> {

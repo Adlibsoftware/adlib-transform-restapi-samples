@@ -36,7 +36,15 @@ def load_config() -> Optional[Config]:
         )
         try:
             with open(config_file, "w", encoding="utf-8") as f:
-                json.dump(default_config.__dict__, f, indent=4)
+                json.dump({
+                    "BaseUrl": default_config.base_url,
+                    "ApiKey": default_config.api_key,
+                    "ApiKeyHeader": default_config.api_key_header,
+                    "ErrorCloseSeconds": default_config.error_close_seconds,
+                    "PollingRateSeconds": default_config.polling_rate_seconds,
+                    "SeparateJobs": default_config.separate_jobs,
+                    "TrustCerts": default_config.trust_certs,
+                }, f, indent=4)
             print(f"Created default {config_file} with default values.")
         except Exception as ex:
             print(f"Failed to create {config_file}: {ex}")
@@ -46,13 +54,13 @@ def load_config() -> Optional[Config]:
         with open(config_file, "r", encoding="utf-8") as f:
             data = json.load(f)
         config = Config(
-            base_url=data.get("base_url", ""),
-            api_key=data.get("api_key", ""),
-            api_key_header=data.get("api_key_header", ""),
-            error_close_seconds=data.get("error_close_seconds", 5),
-            polling_rate_seconds=data.get("polling_rate_seconds", 7),
-            separate_jobs=data.get("separate_jobs", False),
-            trust_certs=data.get("trust_certs", False),
+            base_url=data.get("BaseUrl", ""),
+            api_key=data.get("ApiKey", ""),
+            api_key_header=data.get("ApiKeyHeader", ""),
+            error_close_seconds=data.get("ErrorCloseSeconds", 5),
+            polling_rate_seconds=data.get("PollingRateSeconds", 7),
+            separate_jobs=data.get("SeparateJobs", False),
+            trust_certs=data.get("TrustCerts", False),
         )
         if (
             not config.base_url
@@ -62,7 +70,7 @@ def load_config() -> Optional[Config]:
             or config.polling_rate_seconds <= 0
         ):
             print(
-                f"Invalid {config_file}. Ensure base_url, api_key, api_key_header, error_close_seconds, and polling_rate_seconds are valid."
+                f"Invalid {config_file}. Ensure BaseUrl, ApiKey, ApiKeyHeader, ErrorCloseSeconds, and PollingRateSeconds are valid."
             )
             return None
         return config

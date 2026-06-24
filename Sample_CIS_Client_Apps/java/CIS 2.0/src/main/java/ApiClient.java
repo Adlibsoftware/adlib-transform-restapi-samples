@@ -4,6 +4,9 @@ import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,13 +25,18 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HeaderElement;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.message.ParserCursor;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -89,7 +97,9 @@ public class ApiClient {
         HttpPost post = new HttpPost(basePath + "Submit");
         post.addHeader(apiKeyHeader, apiKey);
 
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create()
+                .setMode(HttpMultipartMode.LEGACY)
+                .setCharset(StandardCharsets.UTF_8);
         builder.addTextBody("RepositoryId", repositoryId.toString());
 
         // Use InputStreams so the multipart entity can stream the file content
@@ -160,23 +170,70 @@ public class ApiClient {
                 throw new IOException("Failed : HTTP error code : " + response.getCode());
             }
 
-            String fileName = jobId + ".unknown";
             Header cdHeader = response.getFirstHeader("Content-Disposition");
             String contentDisposition = cdHeader != null ? cdHeader.getValue() : null;
-            if (contentDisposition != null) {
-                String[] parts = contentDisposition.split(";");
-                for (String part : parts) {
-                    if (part.trim().startsWith("filename=")) {
-                        fileName = part.trim().substring("filename=".length()).replace("\"", "");
-                        break;
-                    }
-                }
-            }
+            String fileName = getDownloadFileName(contentDisposition, jobId);
 
             Path filePath = Paths.get(downloadDirectory, fileName);
             try (InputStream is = response.getEntity().getContent()) {
                 Files.copy(is, filePath);
             }
+        }
+    }
+
+    private static String getDownloadFileName(String contentDisposition, UUID jobId) {
+        String fileName = null;
+
+        if (contentDisposition != null) {
+            String fileNameStar = getContentDispositionParameter(contentDisposition, "filename*");
+
+            if (fileNameStar != null && !fileNameStar.isBlank()) {
+                fileName = decodeRfc5987Value(fileNameStar);
+            }
+
+            if (fileName == null || fileName.isBlank()) {
+                fileName = getContentDispositionParameter(contentDisposition, "filename");
+            }
+        }
+
+        if (fileName == null || fileName.isBlank()) {
+            fileName = jobId + ".unknown";
+        }
+
+        return Paths.get(fileName).getFileName().toString();
+    }
+
+    private static String getContentDispositionParameter(String header, String parameterName) {
+        ParserCursor cursor = new ParserCursor(0, header.length());
+        HeaderElement[] elements = BasicHeaderValueParser.INSTANCE.parseElements(header, cursor);
+
+        for (HeaderElement element : elements) {
+            for (NameValuePair parameter : element.getParameters()) {
+                if (parameter.getName().equalsIgnoreCase(parameterName)) {
+                    return parameter.getValue();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static String decodeRfc5987Value(String value) {
+        int firstQuote = value.indexOf('\'');
+        int secondQuote = value.indexOf('\'', firstQuote + 1);
+
+        if (firstQuote == -1 || secondQuote == -1) {
+            return null;
+        }
+
+        String charsetName = value.substring(0, firstQuote);
+        String encodedValue = value.substring(secondQuote + 1);
+
+        try {
+            Charset charset = Charset.forName(charsetName.isBlank() ? "UTF-8" : charsetName);
+            return URLDecoder.decode(encodedValue.replace("+", "%2B"), charset);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 

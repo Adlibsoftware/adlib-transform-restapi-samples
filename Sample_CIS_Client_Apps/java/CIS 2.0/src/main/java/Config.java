@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -7,12 +8,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Config {
+    @JsonProperty("BaseUrl")
     private String baseUrl;
+    @JsonProperty("ApiKey")
     private String apiKey;
+    @JsonProperty("ApiKeyHeader")
     private String apiKeyHeader;
+    @JsonProperty("ErrorCloseSeconds")
     private int errorCloseSeconds;
+    @JsonProperty("PollingRateSeconds")
     private int pollingRateSeconds;
+    @JsonProperty("SeparateJobs")
     private boolean separateJobs;
+    @JsonProperty("TrustCerts")
     private boolean trustCerts;
 
     public String getBaseUrl() {

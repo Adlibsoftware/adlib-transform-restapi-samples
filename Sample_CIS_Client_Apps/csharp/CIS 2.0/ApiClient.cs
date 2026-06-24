@@ -153,12 +153,30 @@ namespace CIS_2_0
             response.EnsureSuccessStatusCode();
 
             var contentDisposition = response.Content.Headers.ContentDisposition;
-            var fileName = contentDisposition?.FileName.Trim('\"') ?? $"{jobId}.unknown";
+            var fileName = GetDownloadFileName(contentDisposition, jobId);
 
 
             var filePath = Path.Combine(downloadDirectory, fileName);
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
             await response.Content.CopyToAsync(fileStream);
+        }
+
+
+        private static string GetDownloadFileName(ContentDispositionHeaderValue? contentDisposition, Guid jobId)
+        {
+            var fileName = contentDisposition?.FileNameStar;
+
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                fileName = contentDisposition?.FileName?.Trim('\"');
+            }
+
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return $"{jobId}.unknown";
+            }
+
+            return Path.GetFileName(fileName);
         }
 
 

@@ -648,6 +648,74 @@
 			"response": []
 		},
 		{
+			"name": "Submit By Reference",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// SubmitByReference returns a bare quoted jobId GUID, e.g. \"f978c559-...\".",
+							"// Capture it into the jobId variable so Status / Info / Release can be chained.",
+							"var jobId = pm.response.json();",
+							"if (typeof jobId === \"string\" && jobId.length > 0) {",
+							"    pm.collectionVariables.set(\"jobId\", jobId);",
+							"    console.log(\"Captured jobId: \" + jobId);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"repositoryId\": \"{{repositoryId}}\",\r\n    \"inputs\": [\r\n        { \"path\": \"\\\\\\\\your-file-server\\\\share\\\\input1.pdf\" },\r\n        { \"uri\": \"https://your-host/files/input2.docx\" }\r\n    ],\r\n    \"output\": { \"folder\": \"\\\\\\\\your-file-server\\\\share\\\\Output\", \"fileName\": \"result.pdf\" },\r\n    \"metadata\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"description": "Submit one or more input files **by reference** instead of uploading them. Each entry in `inputs` points to a file the Transform engine can reach directly — either a UNC path (`path`) or an http(s) URI (`uri`); the file bytes are **not** included in the request.\n\nThe engine writes the transformed result directly to the location named in `output` (a UNC `folder` plus `fileName`), so there is **no separate Download step** — read the result straight from that folder.\n\n`repositoryId` is optional: when it is omitted the API uses the first repository the API key is authorized for.\n\n**Response:** a bare quoted `jobId` GUID (e.g. `\"f978c559-a016-420f-9427-de4308cebb35\"`). The attached test script captures it into the `jobId` collection variable so Status / Info / Release can be chained.",
+				"url": {
+					"raw": "{{baseUrl}}/api/v2/ClientIntegration/SubmitByReference",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ClientIntegration",
+						"SubmitByReference"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Metadata",
 			"request": {
 				"auth": {

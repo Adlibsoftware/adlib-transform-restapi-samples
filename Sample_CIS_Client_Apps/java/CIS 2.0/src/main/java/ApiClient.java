@@ -34,6 +34,7 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.message.BasicHeaderValueParser;
 import org.apache.hc.core5.http.message.ParserCursor;
@@ -145,6 +146,26 @@ public class ApiClient {
                 } catch (IOException ignored) {
                 }
             }
+        }
+    }
+
+    /**
+     * Submits a job by reference (non-streaming): input files are named by UNC path or http(s) URI and
+     * the engine writes output directly to the requested destination, so no Download call is needed.
+     */
+    public UUID submitByReference(SubmitByReferenceRequest request) throws IOException, ParseException {
+        HttpPost post = new HttpPost(basePath + "SubmitByReference");
+        post.addHeader(apiKeyHeader, apiKey);
+
+        String json = objectMapper.writeValueAsString(request);
+        post.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
+
+        try (CloseableHttpResponse response = httpClient.execute(post)) {
+            if (response.getCode() < 200 || response.getCode() > 204) {
+                throw new IOException("Failed : HTTP error code : " + response.getCode());
+            }
+            String body = EntityUtils.toString(response.getEntity());
+            return objectMapper.readValue(body, UUID.class);
         }
     }
 

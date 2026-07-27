@@ -8,7 +8,7 @@ from uuid import UUID
 import sys
 from config import Config, load_config
 from api_client import ApiClient
-from models import EnvironmentResponse, JobStatusResponse
+from models import EnvironmentResponse, JobStatusResponse, SubmitByReferenceRequest
 
 LOG_FILE_PATH = "log.txt"
 JOB_LOG_FILE_PATH = "JobLogs"
@@ -37,24 +37,29 @@ async def main():
 
         input("\nPress enter to start...")
 
-        # 1. Get Environment
-        env = await client.get_environment()
-        if not env.repositories:
-            raise Exception("No repositories available.")
-        repository_id = env.repositories[0].id
-        print(f"Using repository: {env.repositories[0].name} (ID: {repository_id})")
-
-        if config.separate_jobs and len(input_files) > 1:
-            print("Submitting as multiple jobs.\n")
-            # Process each file as a separate job in parallel using asyncio.gather
-            tasks = []
-            for i, file in enumerate(input_files):
-                tasks.append(process_job(client, repository_id, [file], i, config))
-            await asyncio.gather(*tasks)
+        if config.use_submit_by_reference:
+            # Non-streaming: submit inputs by UNC path / URI from config; the engine writes output
+            # directly to the configured destination, so there is no Download step.
+            await process_by_reference_job(client, config)
         else:
-            print("Submitting as same job.\n")
-            # Process all files as one job
-            await process_job(client, repository_id, input_files, -1, config)
+            # 1. Get Environment
+            env = await client.get_environment()
+            if not env.repositories:
+                raise Exception("No repositories available.")
+            repository_id = env.repositories[0].id
+            print(f"Using repository: {env.repositories[0].name} (ID: {repository_id})")
+
+            if config.separate_jobs and len(input_files) > 1:
+                print("Submitting as multiple jobs.\n")
+                # Process each file as a separate job in parallel using asyncio.gather
+                tasks = []
+                for i, file in enumerate(input_files):
+                    tasks.append(process_job(client, repository_id, [file], i, config))
+                await asyncio.gather(*tasks)
+            else:
+                print("Submitting as same job.\n")
+                # Process all files as one job
+                await process_job(client, repository_id, input_files, -1, config)
 
         print("Demo Completed Successfully.")
     except aiohttp.ClientResponseError as ex:
@@ -106,6 +111,48 @@ async def process_job(client: ApiClient, repository_id: UUID, files: List[str], 
     log("Job Released.\n", id)
 
 
+async def process_by_reference_job(client: ApiClient, config: Config):
+    # Submits a job by reference: inputs are named by UNC path or URI (from appsettings.json), the engine
+    # writes output directly to the configured destination, then we poll status and release. No Download step.
+    if not config.reference_inputs:
+        raise Exception("UseSubmitByReference is true but ReferenceInputs is empty. Add input path/uri references to appsettings.json.")
+
+    # 1. Get Environment (RepositoryId is optional for SubmitByReference; we resolve one here for clarity).
+    env = await client.get_environment()
+    if not env.repositories:
+        raise Exception("No repositories available.")
+    repository_id = env.repositories[0].id
+    print(f"Using repository: {env.repositories[0].name} (ID: {repository_id})")
+
+    # 2. Submit by reference (no file bytes are uploaded)
+    submit_request = SubmitByReferenceRequest(
+        repositoryId=repository_id,
+        inputs=config.reference_inputs,
+        output=config.reference_output,
+        metadata=config.reference_job_metadata or [],
+    )
+    log(f"Submitting {len(submit_request.inputs)} input reference(s) by reference...", -1)
+    job_id = await client.submit_by_reference(submit_request)
+    log(f"Submitted. Job ID: {job_id}\n", -1)
+
+    # 3. Poll Status
+    while True:
+        await asyncio.sleep(config.polling_rate_seconds)
+        status = await client.get_status(job_id)
+        log(f"Status: {status.status}. ID: {job_id}", -1)
+        if status.status.startswith("Completed"):
+            break
+
+    if status.status != "CompletedSuccessful":
+        raise Exception(f"Job completed with status: {status.status}. Details: {status.details}")
+    log(f"Job {job_id} completed successfully. Output was written directly to the configured destination.\n", -1)
+
+    # 4. Release (no Download - the engine wrote output directly to the destination)
+    log(f"Releasing Job: {job_id}", -1)
+    await client.release(job_id)
+    log("Job Released.\n", -1)
+
+
 def startup_tasks(config: Config) -> bool:
     with open(LOG_FILE_PATH, "w", encoding="utf-8") as f:
         f.write("")
@@ -119,10 +166,11 @@ def startup_tasks(config: Config) -> bool:
     except Exception as ex:
         print(f"Error clearing {JOB_LOG_FILE_PATH} directory: {ex}")
 
-    input_files = [f for f in os.listdir(INPUT_DIRECTORY) if os.path.isfile(os.path.join(INPUT_DIRECTORY, f))]
-    if not input_files:
-        handle_error(config, "No files in Input folder to submit. Exiting.")
-        return False
+    if not config.use_submit_by_reference:
+        input_files = [f for f in os.listdir(INPUT_DIRECTORY) if os.path.isfile(os.path.join(INPUT_DIRECTORY, f))]
+        if not input_files:
+            handle_error(config, "No files in Input folder to submit. Exiting.")
+            return False
 
     return True
 

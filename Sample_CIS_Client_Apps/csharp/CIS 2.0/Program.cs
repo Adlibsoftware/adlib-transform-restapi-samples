@@ -42,33 +42,40 @@ class Program
 
 
 
-            // 1. Get Environment
-            var env = await client.GetEnvironmentAsync();
-            if (env.repositories.Count == 0)
+            if (_appSettings.UseSubmitByReference)
             {
-                throw new Exception("No repositories available.");
-            }
-            var repositoryId = env.repositories.First().Id; // Assume only one repository for simplicity
-            Console.WriteLine($"Using repository: {env.repositories.First().Name} (ID: {repositoryId})");
-
-
-
-            if (_appSettings.SeparateJobs && inputFiles.Length > 1)
-            {
-                Console.WriteLine("Submitting as multiple jobs.\n");
-                // Process each file as a separate job in parallel
-                var tasks = new List<Task>();
-                foreach (var file in inputFiles)
-                {
-                    tasks.Add(ProcessJobAsync(client, repositoryId, new List<string> { file }, tasks.Count));
-                }
-                await Task.WhenAll(tasks);
+                // Non-streaming: submit inputs by UNC path / URI from config; the engine writes output
+                // directly to the configured destination, so there is no Download step.
+                await ProcessByReferenceJobAsync(client);
             }
             else
             {
-                Console.WriteLine("Submitting as same job.\n");
-                // Process all files as one job
-                await ProcessJobAsync(client, repositoryId, new List<string>(inputFiles), -1);
+                // 1. Get Environment
+                var env = await client.GetEnvironmentAsync();
+                if (env.repositories.Count == 0)
+                {
+                    throw new Exception("No repositories available.");
+                }
+                var repositoryId = env.repositories.First().Id; // Assume only one repository for simplicity
+                Console.WriteLine($"Using repository: {env.repositories.First().Name} (ID: {repositoryId})");
+
+                if (_appSettings.SeparateJobs && inputFiles.Length > 1)
+                {
+                    Console.WriteLine("Submitting as multiple jobs.\n");
+                    // Process each file as a separate job in parallel
+                    var tasks = new List<Task>();
+                    foreach (var file in inputFiles)
+                    {
+                        tasks.Add(ProcessJobAsync(client, repositoryId, new List<string> { file }, tasks.Count));
+                    }
+                    await Task.WhenAll(tasks);
+                }
+                else
+                {
+                    Console.WriteLine("Submitting as same job.\n");
+                    // Process all files as one job
+                    await ProcessJobAsync(client, repositoryId, new List<string>(inputFiles), -1);
+                }
             }
 
 
@@ -139,6 +146,61 @@ class Program
 
 
     /// <summary>
+    /// Submits a job by reference: inputs are named by UNC path or URI (from appsettings.json), the engine
+    /// writes output directly to the configured destination, then we poll status and release. No Download step.
+    /// </summary>
+    /// <param name="client">The API client to connect to endpoints</param>
+    private static async Task ProcessByReferenceJobAsync(ApiClient client)
+    {
+        if (_appSettings.ReferenceInputs == null || _appSettings.ReferenceInputs.Count == 0)
+        {
+            throw new Exception("UseSubmitByReference is true but ReferenceInputs is empty. Add input path/uri references to appsettings.json.");
+        }
+
+        // 1. Get Environment (RepositoryId is optional for SubmitByReference; we resolve one here for clarity).
+        var env = await client.GetEnvironmentAsync();
+        if (env.repositories.Count == 0)
+        {
+            throw new Exception("No repositories available.");
+        }
+        var repositoryId = env.repositories.First().Id;
+        Console.WriteLine($"Using repository: {env.repositories.First().Name} (ID: {repositoryId})");
+
+        // 2. Submit by reference (no file bytes are uploaded)
+        var submitRequest = new SubmitByReferenceRequest
+        {
+            RepositoryId = repositoryId,
+            Inputs = _appSettings.ReferenceInputs,
+            Output = _appSettings.ReferenceOutput,
+            Metadata = _appSettings.ReferenceJobMetadata ?? new List<MetadataDto>()
+        };
+        Log($"Submitting {submitRequest.Inputs.Count} input reference(s) by reference...", -1);
+        var jobId = await client.SubmitByReferenceAsync(submitRequest);
+        Log($"Submitted. Job ID: {jobId}\n", -1);
+
+        // 3. Poll Status
+        JobStatusResponse status;
+        do
+        {
+            await Task.Delay(_appSettings.PollingRateSeconds * 1000);
+            status = await client.GetStatusAsync(jobId);
+            Log($"Status: {status.Status}. ID: {jobId}", -1);
+        } while (!status.Status.StartsWith("Completed"));
+
+        if (status.Status != "CompletedSuccessful")
+        {
+            throw new Exception($"Job completed with status: {status.Status}. Details: {status.Details}");
+        }
+        Log($"Job {jobId} completed successfully. Output was written directly to the configured destination.\n", -1);
+
+        // 4. Release (no Download - the engine wrote output directly to the destination)
+        Log($"Releasing Job: {jobId}", -1);
+        await client.ReleaseAsync(jobId);
+        Log("Job Released.\n", -1);
+    }
+
+
+    /// <summary>
     /// Performs startup tasks. Clears log, loads config, ensures directories exist, and checks for input files.
     /// </summary>
     /// <returns></returns>
@@ -174,7 +236,7 @@ class Program
             }
         }
 
-        if (Directory.GetFiles(InputDirectory).Length == 0)
+        if (!_appSettings.UseSubmitByReference && Directory.GetFiles(InputDirectory).Length == 0)
         {
             HandleError("No files in Input folder to submit. Exiting.");
             return false;

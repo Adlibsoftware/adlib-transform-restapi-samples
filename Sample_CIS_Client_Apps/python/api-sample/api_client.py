@@ -4,7 +4,7 @@ import os
 from typing import List
 from uuid import UUID
 from datetime import datetime
-from models import EnvironmentResponse, JobStatusResponse, RepositoryDto, GlobalVariableDto
+from models import EnvironmentResponse, JobStatusResponse, RepositoryDto, GlobalVariableDto, SubmitByReferenceRequest
 from urllib.parse import unquote_to_bytes
 
 class ApiClient:
@@ -77,6 +77,17 @@ class ApiClient:
         headers = {}
         await self._add_api_key_header(headers)
         async with self._session.post(f"{self._base_path}Submit", data=form, headers=headers) as response:
+            response.raise_for_status()
+            data = await response.json()
+            return UUID(data)
+
+    async def submit_by_reference(self, request: SubmitByReferenceRequest) -> UUID:
+        # Submits a job by reference (non-streaming): input files are named by UNC path or http(s) URI and
+        # the engine writes output directly to the requested destination, so no Download call is needed.
+        headers = {}
+        await self._add_api_key_header(headers)
+        payload = request.model_dump(mode="json")
+        async with self._session.post(f"{self._base_path}SubmitByReference", json=payload, headers=headers) as response:
             response.raise_for_status()
             data = await response.json()
             return UUID(data)

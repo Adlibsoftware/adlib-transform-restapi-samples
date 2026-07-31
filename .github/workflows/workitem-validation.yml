@@ -7,9 +7,26 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: Adlibsoftware/action-branch-workitem-validation@main
-        with:
-          pr-title: ${{ github.event.pull_request.title }}
+      - name: Validate PR title contains work item reference
+        shell: bash
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$PR_TITLE" =~ AB#([0-9]+) ]]; then
+            echo "PR title is valid. Work item ID: ${BASH_REMATCH[1]}"
+            exit 0
+          fi
+
+          cat >&2 <<'EOF'
+          PR title must include an Azure DevOps work item reference.
+          Expected format: AB#<id> anywhere in the title.
+          Examples:
+            Fix login timeout AB#12345
+            AB#12345 Add retry logic
+          EOF
+          exit 1
       - name: Validate PR body contains work item reference
         shell: bash
         env:

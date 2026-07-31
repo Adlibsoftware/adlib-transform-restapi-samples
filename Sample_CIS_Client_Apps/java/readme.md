@@ -27,6 +27,48 @@ This project provides a sample Java client application for interacting with the 
   }
   ```
 
+## Submit By Reference (non-streaming)
+
+By default the sample streams files from the local `Input` folder to the API (`POST /Submit`) and downloads
+results to `Output` (`GET /Download`). As an alternative, the sample can submit jobs **by reference**
+(`POST /SubmitByReference`): instead of uploading file bytes, you name each input by a UNC path or an
+`http(s)` URI, and the engine writes the output **directly** to a destination you specify. Because the engine
+writes output itself, there is **no Download step** in this mode.
+
+Enable it in `appsettings.json`:
+
+```json
+{
+    "UseSubmitByReference": true,
+    "ReferenceInputs": [
+        { "Path": "\\\\your-file-server\\share\\input1.pdf" },
+        { "Uri": "https://your-host/files/input2.docx" }
+    ],
+    "ReferenceOutput": { "Folder": "\\\\your-file-server\\share\\Output", "FileName": "result.pdf" },
+    "ReferenceJobMetadata": []
+}
+```
+
+Settings:
+
+- `UseSubmitByReference` (boolean, default `false`): when `true`, the sample runs the by-reference flow
+  (Environment -> SubmitByReference -> poll Status -> Release) and skips the local `Input` folder check.
+- `ReferenceInputs` (list): each entry supplies **either** a `Path` (UNC or local path) **or** a `Uri`
+  (`http(s)` URI). Use one per entry. An optional per-input `Metadata` list of `{ "Name": ..., "Value": ... }`
+  pairs can be attached to that input's document.
+- `ReferenceOutput` (object, optional): where output is written directly — a `Folder` (UNC or local) with an
+  optional `FileName`, or a `Uri`.
+- `ReferenceJobMetadata` (list, optional): job-level `{ "Name": ..., "Value": ... }` metadata pairs.
+
+Notes:
+
+- Inputs are UNC paths or `http(s)` URIs — the files are **not** uploaded from the local machine.
+- Output is written directly to the configured destination, so the sample performs **no** Download.
+- `RepositoryId` is optional; when omitted the API uses the first repository the API key is authorized for.
+  (The sample resolves and sends the first available repository for clarity.)
+- The **engine service account** must have read access to the input locations and write access to the output
+  destination.
+
 ## Build and Run
 
 1. Build the project using Maven:

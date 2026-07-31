@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -6,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Config {
     @JsonProperty("BaseUrl")
@@ -22,6 +25,17 @@ public class Config {
     private boolean separateJobs;
     @JsonProperty("TrustCerts")
     private boolean trustCerts;
+
+    // SubmitByReference (non-streaming) settings. When UseSubmitByReference is true, the sample submits the
+    // ReferenceInputs (UNC paths or http(s) URIs) via POST /SubmitByReference and the engine writes output directly.
+    @JsonProperty("UseSubmitByReference")
+    private boolean useSubmitByReference = false;
+    @JsonProperty("ReferenceInputs")
+    private List<InputReference> referenceInputs = new ArrayList<>();
+    @JsonProperty("ReferenceOutput")
+    private OutputReference referenceOutput;
+    @JsonProperty("ReferenceJobMetadata")
+    private List<MetadataDto> referenceJobMetadata = new ArrayList<>();
 
     public String getBaseUrl() {
         return baseUrl;
@@ -79,10 +93,44 @@ public class Config {
         this.trustCerts = trustCerts;
     }
 
+    public boolean isUseSubmitByReference() {
+        return useSubmitByReference;
+    }
+
+    public void setUseSubmitByReference(boolean useSubmitByReference) {
+        this.useSubmitByReference = useSubmitByReference;
+    }
+
+    public List<InputReference> getReferenceInputs() {
+        return referenceInputs;
+    }
+
+    public void setReferenceInputs(List<InputReference> referenceInputs) {
+        this.referenceInputs = referenceInputs;
+    }
+
+    public OutputReference getReferenceOutput() {
+        return referenceOutput;
+    }
+
+    public void setReferenceOutput(OutputReference referenceOutput) {
+        this.referenceOutput = referenceOutput;
+    }
+
+    public List<MetadataDto> getReferenceJobMetadata() {
+        return referenceJobMetadata;
+    }
+
+    public void setReferenceJobMetadata(List<MetadataDto> referenceJobMetadata) {
+        this.referenceJobMetadata = referenceJobMetadata;
+    }
+
     public static Config loadConfig() {
         final String configFile = "appsettings.json";
         Path configPath = Paths.get(configFile);
-        ObjectMapper mapper = new ObjectMapper();
+        // Accept case-insensitive keys so PascalCase appsettings.json keys (e.g. "Path", "Folder", "FileName")
+        // bind to the camelCase model fields used for the by-reference request DTOs.
+        ObjectMapper mapper = new ObjectMapper().enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 
         if (!Files.exists(configPath)) {
             // Create default config

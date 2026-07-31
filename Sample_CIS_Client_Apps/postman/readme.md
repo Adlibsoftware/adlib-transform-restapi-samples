@@ -35,6 +35,7 @@ Configure these variables in your Postman environment:
 | `baseUrl` | Base URL of the API server      | `https://your-server.com`              |
 | `apiKey`  | Your API key for authentication | `your-api-key-here`                    |
 | `jobId`   | GUID of a specific job          | `f978c559-a016-420f-9427-de4308cebb35` |
+| `repositoryId` | Target repository GUID (optional; used by Submit By Reference) | `68ac01e1-263b-4437-8b59-f1c40a07610a` |
 
 ## API Endpoints
 
@@ -116,7 +117,35 @@ Configure these variables in your Postman environment:
 - **Response**: New job GUID
 - **Use Case**: Start new processing jobs
 
-### 8. Release
+### 8. Submit By Reference
+
+- **Method**: `POST`
+- **Endpoint**: `/SubmitByReference`
+- **Content-Type**: `application/json`
+- **Description**: Submits files for processing **by reference** instead of uploading them. Each `inputs` entry points to a file the Transform engine can reach directly — a UNC path (`path`) or an http(s) URI (`uri`) — so the file bytes are not sent in the request. The engine writes the transformed result directly to the `output` location, so there is **no separate Download step**.
+- **Request Body**:
+
+```json
+{
+    "repositoryId": "{{repositoryId}}",
+    "inputs": [
+        { "path": "\\\\your-file-server\\share\\input1.pdf" },
+        { "uri": "https://your-host/files/input2.docx" }
+    ],
+    "output": { "folder": "\\\\your-file-server\\share\\Output", "fileName": "result.pdf" },
+    "metadata": []
+}
+```
+
+- **Body Parameters**:
+  - `repositoryId` (optional): Target repository GUID. When omitted, the API uses the first repository the API key is authorized for.
+  - `inputs[]`: One entry per input file, referenced by either `path` (UNC) or `uri` (http/https).
+  - `output`: Destination `folder` (UNC) and `fileName` for the transformed result.
+  - `metadata[]`: Optional job-level metadata.
+- **Response**: A bare quoted `jobId` GUID (e.g. `"f978c559-a016-420f-9427-de4308cebb35"`). The request's test script stores it in the `jobId` variable so `Status` / `Info` / `Release` can be chained.
+- **Use Case**: Start a job when inputs already live on a file share or URL and the output should be written straight back to a share — no upload or download round-trips.
+
+### 9. Release
 
 - **Method**: `PUT`
 - **Endpoint**: `/Release/{jobId}`
@@ -126,7 +155,7 @@ Configure these variables in your Postman environment:
 - **Response**: HTTP 204 No Content on success
 - **Use Case**: Releases the job for the system after you are done with it (clean up).
 
-### 9. Cancel
+### 10. Cancel
 
 - **Method**: `PUT`
 - **Endpoint**: `/Cancel/{jobId}`
@@ -136,7 +165,7 @@ Configure these variables in your Postman environment:
 - **Response**: HTTP 204 No Content on success
 - **Use Case**: Cancel jobs that are no longer needed or are stuck
 
-### 10. Metadata
+### 11. Metadata
 
 - **Method**: `PUT`
 - **Endpoint**: `/Metadata/{jobId}`
@@ -270,6 +299,7 @@ Configure these variables in your Postman environment:
 
 ## Notes
 
+- Use `Submit` to upload file bytes directly, or `Submit By Reference` when inputs already live on a file share (UNC) or URL and the output should be written straight back to a share (no Download step)
 - All file uploads support large files (up to 4GB)
 - Jobs remain in the system until explicitly released or the internal time auto releases them.
 - Supporting files are optional and copied to the same work folder as input files

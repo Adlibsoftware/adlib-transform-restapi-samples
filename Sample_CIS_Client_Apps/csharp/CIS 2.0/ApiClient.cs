@@ -125,6 +125,23 @@ namespace CIS_2_0
 
 
         /// <summary>
+        /// Submits a job by reference (non-streaming): input files are named by UNC path or http(s) URI and
+        /// the engine writes output directly to the requested destination, so no Download call is needed.
+        /// </summary>
+        /// <param name="submitRequest"></param>
+        /// <returns></returns>
+        public async Task<Guid> SubmitByReferenceAsync(SubmitByReferenceRequest submitRequest)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{_basePath}SubmitByReference");
+            AddApiKeyHeader(request);
+            request.Content = JsonContent.Create(submitRequest);
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<Guid>();
+        }
+
+
+        /// <summary>
         /// Gets the status of a submitted job by its Job ID.
         /// </summary>
         /// <param name="jobId"></param>

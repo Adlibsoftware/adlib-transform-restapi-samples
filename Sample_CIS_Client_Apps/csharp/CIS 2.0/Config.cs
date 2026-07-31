@@ -18,6 +18,13 @@ namespace CIS_2_0
         public bool SeparateJobs { get; set; } = false;
         public bool TrustCerts { get; set; } = false;
 
+        // SubmitByReference (non-streaming) settings. When UseSubmitByReference is true, the sample submits the
+        // ReferenceInputs (UNC paths or http(s) URIs) via POST /SubmitByReference and the engine writes output directly.
+        public bool UseSubmitByReference { get; set; } = false;
+        public List<InputReference> ReferenceInputs { get; set; } = new List<InputReference>();
+        public OutputReference? ReferenceOutput { get; set; }
+        public List<MetadataDto> ReferenceJobMetadata { get; set; } = new List<MetadataDto>();
+
 
         public static bool LoadConfig(ref Config _config)
         {
@@ -33,7 +40,8 @@ namespace CIS_2_0
                     ErrorCloseSeconds = 5,
                     PollingRateSeconds = 7,
                     SeparateJobs = false,
-                    TrustCerts = false
+                    TrustCerts = false,
+                    UseSubmitByReference = false
                 };
 
                 try

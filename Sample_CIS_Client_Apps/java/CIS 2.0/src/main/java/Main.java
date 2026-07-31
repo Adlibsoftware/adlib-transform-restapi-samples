@@ -49,34 +49,40 @@ public class Main {
             new Scanner(System.in).nextLine();
 
 
-            // 1. Get Environment
-            EnvironmentResponse env = client.getEnvironment();
-            if (env.getRepositories().isEmpty()) {
-                throw new Exception("No repositories available.");
-            }
-            UUID repositoryId = env.getRepositories().get(0).getId(); // Assume only one repository for simplicity
-            System.out.println("Using repository: " + env.getRepositories().get(0).getName() + " (ID: " + repositoryId + ")");
-
-            if (appSettings.isSeparateJobs() && inputFiles.size() > 1) {
-                System.out.println("Submitting as multiple jobs.\n");
-                // Process each file as a separate job in parallel
-                List<CompletableFuture<Void>> futures = new ArrayList<>();
-                for (int i = 0; i < inputFiles.size(); i++) {
-                    int finalI = i;
-                    List<String> singleFile = List.of(inputFiles.get(i));
-                    futures.add(CompletableFuture.runAsync(() -> {
-                        try {
-                            processJob(client, repositoryId, singleFile, finalI);
-                        } catch (Exception e) {
-                            handleError("Error in job " + finalI + ": " + e.getMessage());
-                        }
-                    }));
-                }
-                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
+            if (appSettings.isUseSubmitByReference()) {
+                // Non-streaming: submit inputs by UNC path / URI from config; the engine writes output
+                // directly to the configured destination, so there is no Download step.
+                processByReferenceJob(client);
             } else {
-                System.out.println("Submitting as same job.\n");
-                // Process all files as one job
-                processJob(client, repositoryId, inputFiles, -1);
+                // 1. Get Environment
+                EnvironmentResponse env = client.getEnvironment();
+                if (env.getRepositories().isEmpty()) {
+                    throw new Exception("No repositories available.");
+                }
+                UUID repositoryId = env.getRepositories().get(0).getId(); // Assume only one repository for simplicity
+                System.out.println("Using repository: " + env.getRepositories().get(0).getName() + " (ID: " + repositoryId + ")");
+
+                if (appSettings.isSeparateJobs() && inputFiles.size() > 1) {
+                    System.out.println("Submitting as multiple jobs.\n");
+                    // Process each file as a separate job in parallel
+                    List<CompletableFuture<Void>> futures = new ArrayList<>();
+                    for (int i = 0; i < inputFiles.size(); i++) {
+                        int finalI = i;
+                        List<String> singleFile = List.of(inputFiles.get(i));
+                        futures.add(CompletableFuture.runAsync(() -> {
+                            try {
+                                processJob(client, repositoryId, singleFile, finalI);
+                            } catch (Exception e) {
+                                handleError("Error in job " + finalI + ": " + e.getMessage());
+                            }
+                        }));
+                    }
+                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
+                } else {
+                    System.out.println("Submitting as same job.\n");
+                    // Process all files as one job
+                    processJob(client, repositoryId, inputFiles, -1);
+                }
             }
 
             System.out.println("Demo Completed Successfully.");
@@ -125,6 +131,53 @@ public class Main {
         log("Job Released.\n", id);
     }
 
+    /**
+     * Submits a job by reference: inputs are named by UNC path or URI (from appsettings.json), the engine
+     * writes output directly to the configured destination, then we poll status and release. No Download step.
+     */
+    private static void processByReferenceJob(ApiClient client) throws Exception {
+        if (appSettings.getReferenceInputs() == null || appSettings.getReferenceInputs().isEmpty()) {
+            throw new Exception("UseSubmitByReference is true but ReferenceInputs is empty. Add input path/uri references to appsettings.json.");
+        }
+
+        // 1. Get Environment (RepositoryId is optional for SubmitByReference; we resolve one here for clarity).
+        EnvironmentResponse env = client.getEnvironment();
+        if (env.getRepositories().isEmpty()) {
+            throw new Exception("No repositories available.");
+        }
+        UUID repositoryId = env.getRepositories().get(0).getId();
+        System.out.println("Using repository: " + env.getRepositories().get(0).getName() + " (ID: " + repositoryId + ")");
+
+        // 2. Submit by reference (no file bytes are uploaded)
+        SubmitByReferenceRequest submitRequest = new SubmitByReferenceRequest();
+        submitRequest.setRepositoryId(repositoryId);
+        submitRequest.setInputs(appSettings.getReferenceInputs());
+        submitRequest.setOutput(appSettings.getReferenceOutput());
+        submitRequest.setMetadata(appSettings.getReferenceJobMetadata() != null ? appSettings.getReferenceJobMetadata() : new ArrayList<>());
+
+        log("Submitting " + submitRequest.getInputs().size() + " input reference(s) by reference...", -1);
+        UUID jobId = client.submitByReference(submitRequest);
+        log("Submitted. Job ID: " + jobId + "\n", -1);
+
+        // 3. Poll Status
+        JobStatusResponse status;
+        do {
+            Thread.sleep(appSettings.getPollingRateSeconds() * 1000L);
+            status = client.getStatus(jobId);
+            log("Status: " + status.getStatus() + ". ID: " + jobId, -1);
+        } while (!status.getStatus().startsWith("Completed"));
+
+        if (!"CompletedSuccessful".equals(status.getStatus())) {
+            throw new Exception("Job completed with status: " + status.getStatus() + ". Details: " + status.getDetails());
+        }
+        log("Job " + jobId + " completed successfully. Output was written directly to the configured destination.\n", -1);
+
+        // 4. Release (no Download - the engine wrote output directly to the destination)
+        log("Releasing Job: " + jobId, -1);
+        client.release(jobId);
+        log("Job Released.\n", -1);
+    }
+
     private static boolean startupTasks() {
         try {
             Files.writeString(Paths.get(LOG_FILE_PATH), "");
@@ -171,14 +224,18 @@ public class Main {
             }
         }
 
-        try (Stream<Path> stream = Files.list(inputDir)) {
-            if (stream.noneMatch(Files::isRegularFile)) {
-                handleError("No files in Input folder to submit. Exiting.");
+        // Skip the "Input folder must contain files" precheck when submitting by reference:
+        // by-reference inputs are named by UNC path / URI in appsettings.json, not placed in the Input folder.
+        if (!appSettings.isUseSubmitByReference()) {
+            try (Stream<Path> stream = Files.list(inputDir)) {
+                if (stream.noneMatch(Files::isRegularFile)) {
+                    handleError("No files in Input folder to submit. Exiting.");
+                    return false;
+                }
+            } catch (IOException e) {
+                handleError("Failed to check input files: " + e.getMessage());
                 return false;
             }
-        } catch (IOException e) {
-            handleError("Failed to check input files: " + e.getMessage());
-            return false;
         }
 
         return true;

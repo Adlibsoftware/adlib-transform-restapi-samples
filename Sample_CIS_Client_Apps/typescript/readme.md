@@ -44,6 +44,48 @@ This project provides a sample TypeScript client application for interacting wit
    npm start
    ```
 
+## Submit By Reference (non-streaming)
+
+By default the sample streams (uploads) the files in the `Input` folder to the API and later
+downloads the results. As an alternative, the sample supports a **non-streaming** mode that submits
+input files *by reference* using `POST /api/v2/ClientIntegration/SubmitByReference`. In this mode no
+bytes are uploaded: the API is given UNC/local paths or http(s) URIs, and the engine reads the inputs
+and **writes the output directly** to the destination you configure. Because output is written
+directly, there is **no Download step**.
+
+Enable it in `appsettings.json`:
+
+```json
+{
+    "UseSubmitByReference": true,
+    "ReferenceInputs": [
+        { "Path": "\\\\your-file-server\\share\\input1.pdf" },
+        { "Uri": "https://your-host/files/input2.docx" }
+    ],
+    "ReferenceOutput": { "Folder": "\\\\your-file-server\\share\\Output", "FileName": "result.pdf" },
+    "ReferenceJobMetadata": []
+}
+```
+
+- **`UseSubmitByReference`**: set to `true` to use the by-reference flow instead of streaming. When
+  `true`, the `Input` folder is not required and its "must contain files" precheck is skipped.
+- **`ReferenceInputs`**: one entry per input. Each entry uses either `Path` (a UNC or local path) **or**
+  `Uri` (an http(s) URL) — you can mix the two across entries. An optional per-input `Metadata` array
+  (`[{ "Name": "...", "Value": "..." }]`) may be supplied.
+- **`ReferenceOutput`**: where the engine writes the result. Use `Folder` (+ optional `FileName`) for a
+  UNC/local destination, or `Uri` for an http(s) destination.
+- **`ReferenceJobMetadata`**: optional job-level metadata (`[{ "Name": "...", "Value": "..." }]`), e.g.
+  overlay/watermark settings.
+- **`RepositoryId` is optional** for `SubmitByReference`; when omitted the API uses the first
+  repository the API key is authorized for. This sample resolves and sends one for clarity.
+
+The by-reference flow is: `Environment` -> `SubmitByReference` -> poll `Status` until it completes
+(fails unless `CompletedSuccessful`) -> `Release`. There is no `Download` call.
+
+> **Note:** The Transform engine (service) account must have **read access** to the referenced input
+> paths/URIs and **read/write access** to the output destination, since the engine — not this client —
+> reads the inputs and writes the output.
+
 ## Project Structure
 
 - `src`: Contains the main application code.

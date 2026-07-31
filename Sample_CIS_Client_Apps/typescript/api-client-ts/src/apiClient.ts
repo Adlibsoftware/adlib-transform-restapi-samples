@@ -3,7 +3,7 @@ import https from 'https';
 import FormData from 'form-data';
 import fs from 'fs';
 import path from 'path';
-import { EnvironmentResponse, JobStatusResponse } from './models';
+import { EnvironmentResponse, JobStatusResponse, SubmitByReferenceRequest } from './models';
 import contentDisposition from 'content-disposition';
 
 export class ApiClient {
@@ -62,6 +62,18 @@ export class ApiClient {
 
     const response = await this.httpClient.post(this.basePath + 'Submit', form, {
       headers: { ...form.getHeaders(), [this.apiKeyHeader]: this.apiKey },
+    });
+    if (response.status < 200 || response.status > 204) {
+      throw new Error(`Failed: HTTP error ${response.status}: ${response.statusText}`);
+    }
+    return response.data as string;
+  }
+
+  // Submits a job by reference (non-streaming): input files are named by UNC path or http(s) URI and
+  // the engine writes output directly to the requested destination, so no Download call is needed.
+  async submitByReference(request: SubmitByReferenceRequest): Promise<string> {
+    const response = await this.httpClient.post(this.basePath + 'SubmitByReference', request, {
+      headers: { 'Content-Type': 'application/json', [this.apiKeyHeader]: this.apiKey },
     });
     if (response.status < 200 || response.status > 204) {
       throw new Error(`Failed: HTTP error ${response.status}: ${response.statusText}`);

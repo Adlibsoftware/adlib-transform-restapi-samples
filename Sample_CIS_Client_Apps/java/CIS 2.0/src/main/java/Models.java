@@ -200,3 +200,108 @@ class RepositoryDto {
         this.workspaceName = workspaceName;
     }
 }
+
+// A single input file referenced by UNC/local path OR by http(s) URI (use one per entry).
+// Optional per-input metadata is passed through to that input's document.
+class InputReference {
+    private String path;
+    private String uri;
+    private List<MetadataDto> metadata = new ArrayList<>();
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public List<MetadataDto> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<MetadataDto> metadata) {
+        this.metadata = metadata;
+    }
+}
+
+// Where the engine writes output directly: a UNC/local Folder (+ optional FileName), or an http(s) Uri.
+class OutputReference {
+    private String folder;
+    private String fileName;
+    private String uri;
+
+    public String getFolder() {
+        return folder;
+    }
+
+    public void setFolder(String folder) {
+        this.folder = folder;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+}
+
+// Request body for POST /SubmitByReference. Inputs are referenced by path/URI (not uploaded) and the
+// engine writes output directly to the requested destination, so no Download call is needed.
+// RepositoryId is optional; when omitted the API uses the first repository the key is authorized for.
+class SubmitByReferenceRequest {
+    private UUID repositoryId;
+    private List<InputReference> inputs = new ArrayList<>();
+    private OutputReference output;
+    private List<MetadataDto> metadata = new ArrayList<>();
+
+    public UUID getRepositoryId() {
+        return repositoryId;
+    }
+
+    public void setRepositoryId(UUID repositoryId) {
+        this.repositoryId = repositoryId;
+    }
+
+    public List<InputReference> getInputs() {
+        return inputs;
+    }
+
+    public void setInputs(List<InputReference> inputs) {
+        this.inputs = inputs;
+    }
+
+    public OutputReference getOutput() {
+        return output;
+    }
+
+    public void setOutput(OutputReference output) {
+        this.output = output;
+    }
+
+    public List<MetadataDto> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<MetadataDto> metadata) {
+        this.metadata = metadata;
+    }
+}

@@ -312,6 +312,16 @@ curl -sS -X PUT \
   -i
 ```
 
+#### Retry a Job — PUT /api/v2.0/ClientIntegration/Retry/{jobId}
+
+Available in v2026.2 or later
+
+Re-submits a completed, unreleased job under its existing job ID: the original inputs are reprocessed and the outputs produced and delivered again, including to any URI destination configured on the job.
+
+jobId is a GUID in the route; an empty GUID is rejected.
+
+Responses: 200 with a JobResponse, 400 + ResponseStatus if the job can't be retried, 401 if the key is missing/invalid
+
 ### AI (Future coming in 2026.1)
 
 #### `POST AiRagChat`
